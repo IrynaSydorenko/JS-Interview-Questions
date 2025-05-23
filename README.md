@@ -592,3 +592,318 @@ Understanding the different types of errors helps you debug more effectively and
   <h4>Conclusion:</h4>
   <p>Understanding scope and hoisting helps avoid unexpected behaviors and bugs. Prefer <code>let</code> and <code>const</code> over <code>var</code> for safer, clearer code.</p>
 </details>
+
+<details>
+  <summary><strong>11. What is a closure in JavaScript?</strong></summary>
+
+  <h4>Definition:</h4>
+  <p>A <strong>closure</strong> is a function that <strong>remembers the variables from its lexical scope</strong> even when it's executed outside of that scope.</p>
+
+  <h4>How it works:</h4>
+  <p>When a function is created inside another function, it forms a closure. The inner function has access to:</p>
+  <ul>
+    <li>Its own scope (variables defined inside it)</li>
+    <li>The outer function’s variables</li>
+    <li>The global scope</li>
+  </ul>
+
+  ```js
+  function outer() {
+    let counter = 0; // this variable is part of the closure
+
+    return function inner() {
+      counter++;
+      console.log(counter);
+    };
+  }
+
+  const increment = outer();
+  increment(); // 1
+  increment(); // 2
+  ```
+
+  <h4>Why closures are useful:</h4>
+  <ul>
+    <li>They help create <strong>private variables</strong>.</li>
+    <li>Used in <strong>callbacks, event handlers, setTimeout, setInterval</strong>.</li>
+    <li>Important in <strong>functional programming</strong> and working with <code>useState</code>, <code>useEffect</code> in React.</li>
+  </ul>
+
+  <h4>Common mistake:</h4>
+  <p>Closures keep references to variables, not copies. Be careful with loops:</p>
+
+  ```js
+  for (var i = 0; i < 3; i++) {
+    setTimeout(() => console.log(i), 100);
+  }
+  // logs: 3, 3, 3 (because of var)
+
+  // Fix using let:
+  for (let i = 0; i < 3; i++) {
+    setTimeout(() => console.log(i), 100);
+  }
+  // logs: 0, 1, 2
+  ```
+
+  <h4>Conclusion:</h4>
+  <p>A closure allows a function to remember and access variables from the outer scope even after that outer function has finished executing. This is a powerful concept used throughout JavaScript development.</p>
+</details>
+
+<details>
+  <summary><strong>12. What does "functions as data" and "higher-order functions" mean in JavaScript?</strong></summary>
+
+  <h4>Functions as Data:</h4>
+  <p>In JavaScript, <strong>functions are first-class citizens</strong>. This means:</p>
+  <ul>
+    <li>You can assign a function to a variable</li>
+    <li>You can pass a function as an argument to another function</li>
+    <li>You can return a function from another function</li>
+  </ul>
+
+  ```js
+  const greet = function(name) {
+    return `Hello, ${name}`;
+  };
+
+  console.log(greet("Iryna")); // Hello, Iryna
+  ```
+
+  <h4>Higher-Order Functions:</h4>
+  <p>A <strong>higher-order function</strong> is a function that either:</p>
+  <ul>
+    <li><strong>Takes one or more functions</strong> as arguments, or</li>
+    <li><strong>Returns a function</strong> as its result</li>
+  </ul>
+
+  ```js
+  // Takes a function as an argument
+  function repeat(n, action) {
+    for (let i = 0; i < n; i++) {
+      action(i);
+    }
+  }
+
+  repeat(3, console.log); // logs: 0, 1, 2
+
+  // Returns a function
+  function multiplier(factor) {
+    return function (number) {
+      return number * factor;
+    };
+  }
+
+  const double = multiplier(2);
+  console.log(double(5)); // 10
+  ```
+
+  <h4>Common Use Cases:</h4>
+  <ul>
+    <li>Array methods like <code>map</code>, <code>filter</code>, <code>reduce</code></li>
+    <li>Event listeners and callbacks</li>
+    <li>Creating reusable utilities (e.g., function factories)</li>
+  </ul>
+
+  <h4>Conclusion:</h4>
+  <p>JavaScript treats functions as values, allowing them to be passed around and composed. This makes the language very flexible and enables patterns like functional programming and abstraction using higher-order functions.</p>
+</details>
+
+<details>
+  <summary><strong>13. What is a guard expression (early return) in JavaScript?</strong></summary>
+
+  <h4>Definition:</h4>
+  <p>A <strong>guard expression</strong>, also called an <strong>early return</strong>, is a coding practice where you check for invalid or undesired conditions at the beginning of a function and return early if they're met. This helps to reduce nesting and makes the code easier to read and maintain.</p>
+
+  <h4>Example:</h4>
+  ```js
+  function divide(a, b) {
+    if (b === 0) {
+      return 'Cannot divide by zero'; // guard clause
+    }
+    return a / b;
+  }
+
+  console.log(divide(10, 0)); // "Cannot divide by zero"
+  console.log(divide(10, 2)); // 5
+  ```
+
+  <h4>Benefits:</h4>
+  <ul>
+    <li><strong>Improves readability</strong> by avoiding deep nesting</li>
+    <li><strong>Highlights edge cases</strong> and handles them early</li>
+    <li><strong>Makes logic flow clearer</strong> and less error-prone</li>
+  </ul>
+
+  <h4>Without Guard Expression (Nested):</h4>
+  ```js
+  function divide(a, b) {
+    if (b !== 0) {
+      return a / b;
+    } else {
+      return 'Cannot divide by zero';
+    }
+  }
+  ```
+
+  <h4>With Guard Expression (Preferred):</h4>
+  ```js
+  function divide(a, b) {
+    if (b === 0) return 'Cannot divide by zero';
+    return a / b;
+  }
+  ```
+
+  <h4>Conclusion:</h4>
+  <p>Guard expressions help simplify function logic and improve clarity by handling invalid cases early and exiting before continuing the rest of the logic.</p>
+</details>
+
+<details>
+  <summary><strong>14. What is the difference between arrow functions and regular functions in JavaScript?</strong></summary>
+
+  <h4>Definition:</h4>
+  <p>Arrow functions (<code>() => {}</code>) were introduced in ES6 and provide a shorter syntax for writing functions. Regular functions use the <code>function</code> keyword. The main differences are in syntax, handling of <code>this</code>, <code>arguments</code>, and usage as constructors.</p>
+
+  <h4>Syntax:</h4>
+  ```js
+  // Regular function
+  function greet(name) {
+    return `Hello, ${name}`;
+  }
+
+  // Arrow function
+  const greet = (name) => `Hello, ${name}`;
+  ```
+
+  <h4>Key Differences:</h4>
+  <ul>
+    <li><strong>this binding:</strong> 
+      <ul>
+        <li>Arrow functions do <strong>not</strong> have their own <code>this</code>. They inherit <code>this</code> from the surrounding lexical scope.</li>
+        <li>Regular functions have their <strong>own</strong> <code>this</code> depending on how they're called.</li>
+      </ul>
+    </li>
+    <li><strong>arguments object:</strong>
+      <ul>
+        <li>Regular functions have an <code>arguments</code> object.</li>
+        <li>Arrow functions do <strong>not</strong>. You must use rest parameters instead.</li>
+      </ul>
+    </li>
+    <li><strong>Constructor usage:</strong>
+      <ul>
+        <li>Regular functions can be used with <code>new</code> to create instances.</li>
+        <li>Arrow functions <strong>cannot</strong> be used as constructors.</li>
+      </ul>
+    </li>
+    <li><strong>Implicit return:</strong>
+      <ul>
+        <li>Arrow functions can return expressions implicitly (without <code>return</code> keyword).</li>
+        <li>Regular functions require an explicit <code>return</code>.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h4>Example of this binding difference:</h4>
+  ```js
+  const person = {
+    name: 'Iryna',
+    regular: function () {
+      console.log('regular:', this.name); // 'Iryna'
+    },
+    arrow: () => {
+      console.log('arrow:', this.name); // undefined
+    }
+  };
+
+  person.regular(); // "regular: Iryna"
+  person.arrow();   // "arrow: undefined"
+  ```
+
+  <h4>Conclusion:</h4>
+  <p>Use arrow functions when you want lexical <code>this</code> and simpler syntax. Use regular functions when you need your own <code>this</code>, <code>arguments</code>, or plan to use the function as a constructor.</p>
+</details>
+
+<details>
+  <summary><strong>15. How to check if an object has a property in JavaScript?</strong></summary>
+
+  <h4>1. Using <code>in</code> operator:</h4>
+  <p>Checks if the property exists in the object or its prototype chain.</p>
+  ```js
+  const user = { name: 'Iryna' };
+  console.log('name' in user); // true
+  console.log('toString' in user); // true (inherited from Object.prototype)
+  ```
+
+  <h4>2. Using <code>hasOwnProperty()</code>:</h4>
+  <p>Checks if the property exists <strong>only directly on the object</strong>, not on its prototype chain.</p>
+  ```js
+  console.log(user.hasOwnProperty('name')); // true
+  console.log(user.hasOwnProperty('toString')); // false
+  ```
+
+  <h4>3. Using <code>Object.hasOwn()</code> (ES2022+):</h4>
+  <p>Modern alternative to <code>hasOwnProperty</code>, avoids issues if the method is shadowed.</p>
+  ```js
+  Object.hasOwn(user, 'name'); // true
+  ```
+
+  <h4>4. Optional chaining with strict equality:</h4>
+  <p>This is helpful if you just want to know whether the property has a defined value:</p>
+  ```js
+  if (user?.name !== undefined) {
+    console.log('Property exists and is defined');
+  }
+  ```
+
+  <h4>Conclusion:</h4>
+  <ul>
+    <li>Use <code>in</code> if you care about inherited properties.</li>
+    <li>Use <code>hasOwnProperty()</code> or <code>Object.hasOwn()</code> if you want only the object’s own properties.</li>
+  </ul>
+</details>
+
+<details>
+  <summary><strong>1. How to make a copy of an object in JavaScript?</strong></summary>
+
+  <p>In JavaScript, copying an object can be done in two main ways: shallow copy and deep copy. Each has different use cases depending on whether you need to preserve nested object structures independently.</p>
+
+  <h4>1. Shallow copy</h4>
+  <p>A shallow copy copies only the top-level properties. If the original object contains nested objects, those nested objects are shared between the original and the copy.</p>
+
+  <h5>Using the spread operator</h5>
+  ```js
+  const original = { name: "Iryna", skills: { js: true } };
+  const copy = { ...original };
+
+  copy.name = "Anna";
+  copy.skills.js = false;
+
+  console.log(original.name); // "Iryna"
+  console.log(original.skills.js); // false — nested object was shared
+  ```
+
+  <h5>Using <code>Object.assign()</code></h5>
+  ```js
+  const original = { name: "Iryna", skills: { js: true } };
+  const copy = Object.assign({}, original);
+  ```
+
+  <h4>2. Deep copy</h4>
+  <p>A deep copy creates a completely independent copy, including all nested objects.</p>
+
+  ### Using `JSON.parse(JSON.stringify())`
+  <p>This method works well for simple objects (no functions, undefined, circular refs).</p>
+  ```js
+  const original = { name: "Iryna", skills: { js: true } };
+  const deepCopy = JSON.parse(JSON.stringify(original));
+  ```
+  ---
+  ### Using Lodash `cloneDeep`
+  For complex objects (functions, circular structures, etc.), use Lodash.
+  ```js
+  import cloneDeep from "lodash/cloneDeep";
+
+  const original = { name: "Iryna", skills: { js: true } };
+  const deepCopy = cloneDeep(original);
+  ```
+
+  <p><strong>Conclusion:</strong> Use shallow copy for flat objects or when shared references are acceptable. Use deep copy when you need full independence between the original and the copy.</p>
+</details>
